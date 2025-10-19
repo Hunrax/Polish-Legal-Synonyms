@@ -2,6 +2,6 @@ __pycache__
 venv/
 .venv/
 plwordnet_4_2/
-cc.pl.300.bin
+*.bin
 tekst.txt
 results.txt
