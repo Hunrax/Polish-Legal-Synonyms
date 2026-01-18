@@ -3,5 +3,4 @@ venv/
 .venv/
 plwordnet_4_2/
 *.bin
-tekst.txt
-results.txt
+*.txt
