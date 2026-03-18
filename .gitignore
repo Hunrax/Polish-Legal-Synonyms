@@ -4,3 +4,4 @@ venv/
 plwordnet_4_2/
 *.bin
 *.txt
+*.pdf
