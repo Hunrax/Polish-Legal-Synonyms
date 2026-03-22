@@ -43,9 +43,14 @@ def clean_and_extract(pdf_path):
     allowed_pos = {"NOUN", "VERB", "ADJ", "ADV"}
 
     lemma_map = {}
+    checked_words = set()
 
     for token in doc:
         word = token.text.lower()
+
+        if word in checked_words:
+            continue
+        checked_words.add(word)
 
         if token.pos_ in allowed_pos and token.is_alpha and len(word) >= 3:
             suggestions = morf.stem([word], parser)
@@ -65,9 +70,13 @@ def clean_and_extract(pdf_path):
 
 if __name__ == "__main__":
     print("Extract lemmas and words from a PDF file.")
-    input_pdf = input("Enter the path to the input PDF file (e.g. ustawa_1.pdf): ").strip()
+    input_pdf = input("Enter the input PDF file name (e.g. ustawa_1.pdf): ").strip()
+    input_file_name = input_pdf.split(".")[0]
 
-    mapping = clean_and_extract(input_pdf)
+    os.makedirs("output", exist_ok=True)
+    os.makedirs(f"output/{input_file_name}", exist_ok=True)
+
+    mapping = clean_and_extract(f"input/{input_pdf}")
 
     if mapping:
         sorted_lemmas = sorted(mapping.keys())
@@ -77,18 +86,18 @@ if __name__ == "__main__":
             all_extracted_words.update(words)
         sorted_originals = sorted(list(all_extracted_words))
 
-        with open("lemmas.txt", "w", encoding="utf-8") as f:
+        with open(f"output/{input_file_name}/{input_file_name}_lemmas.txt", "w", encoding="utf-8") as f:
             f.write("\n".join(sorted_lemmas))
         
-        with open("extracted_words.txt", "w", encoding="utf-8") as f:
+        with open(f"output/{input_file_name}/{input_file_name}_extracted_words.txt", "w", encoding="utf-8") as f:
             f.write("\n".join(sorted_originals))
 
-        with open("lemma_mapping.txt", "w", encoding="utf-8") as f:
+        with open(f"output/{input_file_name}/{input_file_name}_lemma_mapping.txt", "w", encoding="utf-8") as f:
             for lemma in sorted_lemmas:
                 originals = ", ".join(sorted(list(mapping[lemma])))
                 f.write(f"{lemma}: [{originals}]\n")
 
     print("\n--- PROCESS COMPLETED ---")
-    print(f"1. Extracted and saved {len(sorted_originals)} original words to file 'extracted_words.txt'.")
-    print(f"2. Reduced to {len(sorted_lemmas)} unique lemmas and saved to file 'lemmas.txt'.")
-    print(f"3. Full mapping of relations saved to file 'lemma_mapping.txt'.")
+    print(f"1. Extracted and saved {len(sorted_originals)} original words to file 'output/{input_file_name}/{input_file_name}_extracted_words.txt'.")
+    print(f"2. Reduced to {len(sorted_lemmas)} unique lemmas and saved to file 'output/{input_file_name}/{input_file_name}_lemmas.txt'.")
+    print(f"3. Full mapping of relations saved to file 'output/{input_file_name}/{input_file_name}_lemma_mapping.txt'.")
