@@ -4,19 +4,19 @@ import sys
 
 def verify_lemmas(file_prefix, output_dir="output"):
     
-    lemmas_file = os.path.join(output_dir, f"{file_prefix}_lemmas.txt")
-    key_file = os.path.join(output_dir, f"{file_prefix}_key.json")
+    lemmas_file = os.path.join(output_dir, file_prefix, f"{file_prefix}_lemmas.txt")
+    key_file = os.path.join(output_dir, file_prefix, f"{file_prefix}_key.json")
     
     if not os.path.exists(lemmas_file):
-        print(f"❌ Brak pliku: {lemmas_file}")
+        print(f"❌ No file: {lemmas_file}")
         return
     
     if not os.path.exists(key_file):
-        print(f"❌ Brak pliku: {key_file}")
+        print(f"❌ No file: {key_file}")
         return
     
     print(f"\n{'='*60}")
-    print(f"Plik: {file_prefix}")
+    print(f"File: {file_prefix}")
     print('='*60)
     
     with open(lemmas_file, 'r', encoding='utf-8') as f:
@@ -40,15 +40,15 @@ def verify_lemmas(file_prefix, output_dir="output"):
     
     missing_words = all_words_in_json - lemmas
     
-    print(f"Słów w lemmas: {len(lemmas)}")
-    print(f"Słów w JSON groups: {len(all_words_in_json)}")
+    print(f"Words in lemmas: {len(lemmas)}")
+    print(f"Words in JSON groups: {len(all_words_in_json)}")
     
     if missing_words:
-        print(f"\n❌ Brakujące słowa ({len(missing_words)}):")
+        print(f"\n❌ Missing words ({len(missing_words)}):")
         for word in sorted(missing_words):
             print(f"  - {word}")
     else:
-        print("\n✅ Wszystkie słowa z JSON-a znajdują się w pliku lemmas!")
+        print("\n✅ All words from JSON are present in the lemmas file!")
     
     data["groups"] = cleaned_groups
     
@@ -59,28 +59,28 @@ def verify_lemmas(file_prefix, output_dir="output"):
     removed_words = original_words_count - final_words_count
     
     print(f"\n{'='*60}")
-    print("🔧 Czyszczenie danych...")
+    print("🔧 Data cleaning...")
     print('='*60)
-    print(f"Grup przed czyszczeniem: {original_groups_count}")
-    print(f"Grup po czyszczeniu: {final_groups_count}")
-    print(f"Usunięto grup: {removed_groups}")
-    print(f"\nSlów przed czyszczeniem: {original_words_count}")
-    print(f"Slów po czyszczeniu: {final_words_count}")
-    print(f"Usunięto słów: {removed_words}")
+    print(f"Groups before cleaning: {original_groups_count}")
+    print(f"Groups after cleaning: {final_groups_count}")
+    print(f"Removed groups: {removed_groups}")
+    print(f"\nWords before cleaning: {original_words_count}")
+    print(f"Words after cleaning: {final_words_count}")
+    print(f"Removed words: {removed_words}")
 
-    print("\n✅ Czyszczenie zakończone!")
-    input("\nNaciśnij Enter, aby zapisać oczyszczony JSON...")
+    print("\n✅ Data cleaning completed!")
+    input("\nPress Enter to save the cleaned JSON...")
     
     with open(key_file, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     
-    print(f"\n✅ Plik {key_file} został zaktualizowany!")
+    print(f"\n✅ File {key_file} has been updated!")
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Użycie: python verify_groups.py <file_prefix>")
-        print("Przykład: python verify_groups.py orzeczenie_1.pdf")
+        print("Usage: python verify_groups.py <file_prefix>")
+        print("Example: python verify_groups.py orzeczenie_1")
         sys.exit(1)
     
     file_prefix = sys.argv[1]
