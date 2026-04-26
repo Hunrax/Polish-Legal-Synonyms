@@ -72,6 +72,35 @@ def clean_and_extract(pdf_path):
     return lemma_map
 
 
+def extract_words_without_lemmas(pdf_path):
+    """Extract filtered words from PDF without lemmatization."""
+    try:
+        nlp = spacy.load("pl_core_news_lg")
+    except OSError:
+        print("Error while loading 'pl_core_news_lg'. Run: python -m spacy download pl_core_news_lg")
+        return None
+
+    raw_text = load_pdf_text(pdf_path)
+    doc = nlp(raw_text)
+
+    allowed_pos = {"NOUN", "VERB", "ADJ", "ADV"}
+
+    extracted_words = set()
+    checked_words = set()
+
+    for token in doc:
+        word = token.text.lower()
+
+        if word in checked_words:
+            continue
+        checked_words.add(word)
+
+        if token.pos_ in allowed_pos and token.is_alpha and len(word) >= 3:
+            extracted_words.add(word)
+
+    return extracted_words
+
+
 if __name__ == "__main__":
     print("Extract lemmas and words from a PDF file.")
     input_pdf = input("Enter the input PDF file name (e.g. ustawa_1.pdf): ").strip()
