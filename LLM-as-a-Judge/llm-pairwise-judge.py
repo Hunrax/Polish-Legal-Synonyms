@@ -71,7 +71,7 @@ Słowo 2: {word2}
 
     raise RuntimeError(f"Failed after 10 attempts for pair ({word1}, {word2}). Last error: {last_error}")
 
-def process_file(file_path):
+def evaluate_synonyms_with_llm(file_path):
     with open(file_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
@@ -105,10 +105,32 @@ def process_file(file_path):
 
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-        os.makedirs("response", exist_ok=True)
-        output_path = Path("response") / f"results_{file_name}_{timestamp}.json"
+        os.makedirs("results", exist_ok=True)
+        output_path = Path("results") / f"results_{file_name}_{timestamp}.json"
+
+    valid_scores = [r["value"] for r in results if r["value"] is not None]
+
+    average_score = (
+        round(sum(valid_scores) / len(valid_scores), 2)
+        if valid_scores
+        else None
+    )
+
+    output_data = {
+        "metadata": {
+            "model": MODEL_NAME,
+            "total_pairs": total_pairs,
+            "evaluated_pairs": len(valid_scores),
+            "average_score": average_score if average_score else None,
+        },
+        "results": results
+    }
 
     with open(output_path, "w", encoding="utf-8") as f:
-        json.dump(results, f, ensure_ascii=False, indent=2)
+        json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-process_file(sys.argv[1])
+    print(f"\nAverage score: {average_score}")
+    print(f"Saved to {output_path}")
+    return average_score
+
+evaluate_synonyms_with_llm(sys.argv[1])
