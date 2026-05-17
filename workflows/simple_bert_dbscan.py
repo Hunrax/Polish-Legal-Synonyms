@@ -37,7 +37,7 @@ def run_workflow(pdf_filename, model_name, epsilon):
     for group in predicted_groups:
         print(f"Predicted group: {', '.join(group)}")
 
-    evaluation = evaluate_synonyms_with_llm(predicted_groups, label=f"{model_name}_dbscan")
+    evaluation = evaluate_synonyms_with_llm(predicted_groups, label=f"bert_dbscan")
 
     lemmas_in_pairs = len(set(word for group in predicted_groups for word in group))
     metrics = calculate_metrics(evaluation, len(all_words), lemmas_in_pairs)
