@@ -48,7 +48,7 @@ def lemmatize_groups(word_groups):
             lemma_set.add(lemma)
         
         # Convert set to sorted list for consistency
-        if lemma_set:
+        if len(lemma_set) > 1:
             lemma_groups.append(sorted(list(lemma_set)))
     
     return lemma_groups

@@ -6,3 +6,4 @@ plwordnet_4_2/
 *.txt
 *.pdf
 !requirements.txt
+/results/

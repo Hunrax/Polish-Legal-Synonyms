@@ -4,18 +4,20 @@ import torch.nn.functional as F
 import numpy as np
 from collections import defaultdict
 
-# model_name = "allegro/herbert-large-cased"
-model_name = "dkleczek/bert-base-polish-cased-v1"
-# model_name = "nlpaueb/legal-bert-base-uncased"
+model_names = [
+    "allegro/herbert-large-cased",
+    "dkleczek/bert-base-polish-cased-v1",
+    "nlpaueb/legal-bert-base-uncased"
+]
 
-def get_embeddings(words: set[str]):
+def get_embeddings(words: set[str], model_name: str):
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name).to("cpu")
+    model = AutoModel.from_pretrained(model_name).to("cuda")
 
     word_embeddings = {}
     for word in words:
-        tokens = tokenizer(word, return_tensors='pt', add_special_tokens=False).to("cpu")
+        tokens = tokenizer(word, return_tensors='pt', add_special_tokens=False).to("cuda")
         with torch.no_grad():
             outputs = model(**tokens)
             embeddings = outputs.last_hidden_state.mean(dim=1).squeeze(0)
@@ -25,16 +27,16 @@ def get_embeddings(words: set[str]):
     return word_embeddings
 
 
-def get_contextual_embeddings(texts: list[str], target_words: set[str]):
+def get_contextual_embeddings(texts: list[str], target_words: set[str], model_name: str):
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name).to("cpu")
+    model = AutoModel.from_pretrained(model_name).to("cuda")
 
     collected_vectors = defaultdict(list)
 
     for text in texts:
         inputs = tokenizer(text, return_tensors="pt", return_offsets_mapping=True, 
-                           truncation=True, max_length=512).to("cpu")
+                           truncation=True, max_length=512).to("cuda")
         offsets = inputs.pop("offset_mapping")[0].cpu().numpy()
         
         with torch.no_grad():

@@ -102,18 +102,11 @@ def evaluate_synonyms_with_llm(groups: list, label: str):
 
     valid_scores = [r["value"] for r in results if r["value"] is not None]
 
-    average_score = (
-        round(sum(valid_scores) / len(valid_scores), 2)
-        if valid_scores
-        else None
-    )
-
     output_data = {
         "metadata": {
             "model": MODEL_NAME,
             "total_pairs": total_pairs,
             "evaluated_pairs": len(valid_scores),
-            "average_score": average_score if average_score else None,
         },
         "results": results
     }
@@ -121,6 +114,5 @@ def evaluate_synonyms_with_llm(groups: list, label: str):
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output_data, f, ensure_ascii=False, indent=2)
 
-    print(f"\nAverage score: {average_score}")
     print(f"Saved to {output_path}")
-    return average_score
+    return output_data
