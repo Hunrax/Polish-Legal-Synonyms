@@ -71,12 +71,7 @@ Słowo 2: {word2}
 
     raise RuntimeError(f"Failed after 10 attempts for pair ({word1}, {word2}). Last error: {last_error}")
 
-def evaluate_synonyms_with_llm(file_path):
-    with open(file_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
-    groups = data.get("groups", [])
-
+def evaluate_synonyms_with_llm(groups: list, label: str):
     results = []
 
     total_pairs = sum(len(list(itertools.combinations(g, 2))) for g in groups)
@@ -100,13 +95,10 @@ def evaluate_synonyms_with_llm(file_path):
 
             print(f"[{done}/{total_pairs}]: {word1} - {word2} => {score}")
 
-        input_path = Path(file_path)
-        file_name = input_path.stem
-
         timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
         os.makedirs("results", exist_ok=True)
-        output_path = Path("results") / f"results_{file_name}_{timestamp}.json"
+        output_path = Path("results") / f"results_{label}_{timestamp}.json"
 
     valid_scores = [r["value"] for r in results if r["value"] is not None]
 
@@ -132,5 +124,3 @@ def evaluate_synonyms_with_llm(file_path):
     print(f"\nAverage score: {average_score}")
     print(f"Saved to {output_path}")
     return average_score
-
-evaluate_synonyms_with_llm(sys.argv[1])
