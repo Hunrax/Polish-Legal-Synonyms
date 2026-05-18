@@ -1,13 +1,21 @@
 from gensim.models import KeyedVectors
-import re
 
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent
 model_path = BASE_DIR / "model.bin"
 
+_model = None
+
+def get_model():
+    global _model
+    if _model is None:
+        print("LOADING WORD2VEC MODEL...")
+        _model = KeyedVectors.load_word2vec_format(model_path, binary=True)
+    return _model
+
 def group_similar_words_word2vec(words, threshold=0.7):
-    model = KeyedVectors.load_word2vec_format(model_path, binary=True)
+    model = get_model()
 
     grouped = []
     seen = set()

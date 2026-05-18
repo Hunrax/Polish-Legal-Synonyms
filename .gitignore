@@ -5,5 +5,7 @@ plwordnet_4_2/
 *.bin
 *.txt
 *.pdf
+*.csv
+*.xml
 !requirements.txt
 /results/

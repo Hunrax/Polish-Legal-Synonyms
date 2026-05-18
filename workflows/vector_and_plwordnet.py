@@ -7,10 +7,11 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from text_extraction.extract_from_pdf import clean_and_extract
 from models.word2vec.word2vec import group_similar_words_word2vec
 from models.fasttext.fasttext import group_similar_words_fasttext
+from models.plwordnet.plwordnet import group_similar_words_plwordnet
 from llm_as_a_judge.llm_pairwise_judge import evaluate_synonyms_with_llm
 from metrics.metrics_pairwise import calculate_metrics
 
-model_names = ["word2vec", "fasttext"]
+model_names = ["word2vec", "fasttext", "plwordnet"]
 
 def run_workflow(pdf_filename, model_name, threshold):
     pdf_path = Path("input") / pdf_filename
@@ -31,6 +32,11 @@ def run_workflow(pdf_filename, model_name, threshold):
         groups = group_similar_words_fasttext(lemmas, threshold=threshold)
         for i, group in enumerate(groups, start=1):
             print(f"Group {i}: {', '.join(group)}")
+
+    elif model_name == "plwordnet":
+        groups = group_similar_words_plwordnet(set(lemmas))
+        for i, group in enumerate(groups, start=1):
+            print(f"Group {i}: {', '.join(group)}")
     
     evaluation = evaluate_synonyms_with_llm(groups, label=model_name)
 
@@ -46,6 +52,15 @@ def run_workflow(pdf_filename, model_name, threshold):
     for score, count in metrics["score_distribution"].items():
         print(f"  {score}: {count}")
 
+    return {
+        "model": model_name,
+        "threshold": threshold,
+        "average_score": metrics["average_score"],
+        "median_score": metrics["median_score"],
+        "acceptance_rate": metrics["acceptance_rate"],
+        "coverage": metrics["coverage"],
+    }
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Usage: python vector_model.py <pdf_filename>")
@@ -60,6 +75,8 @@ if __name__ == "__main__":
     model_name = model_names[model_choice - 1]
     print(f"Selected model: {model_name}\n")
 
-    threshold = float(input("Enter similarity threshold (e.g., 0.5): "))
+    threshold = None
+    if(model_name in ["word2vec", "fasttext"]):
+        threshold = float(input("Enter similarity threshold (e.g., 0.5): "))
 
     run_workflow(pdf_filename, model_name, threshold)
