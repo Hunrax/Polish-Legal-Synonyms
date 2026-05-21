@@ -74,6 +74,17 @@ Słowo 2: {word2}
 def evaluate_synonyms_with_llm(groups: list, label: str):
     results = []
 
+    if not groups:
+        print("No groups to evaluate")
+        return {
+            "metadata": {
+                "model": MODEL_NAME,
+                "total_pairs": 0,
+                "evaluated_pairs": 0,
+            },
+            "results": []
+        }
+
     total_pairs = sum(len(list(itertools.combinations(g, 2))) for g in groups)
     done = 0
 

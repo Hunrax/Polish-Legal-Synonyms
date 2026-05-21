@@ -3,6 +3,15 @@ import statistics
 def calculate_metrics(data: dict, all_lemmas: int, lemmas_in_pairs: int):
     valid_scores = [r["value"] for r in data["results"] if r["value"] is not None]
 
+    if not valid_scores:
+        return {
+            "average_score": 0.0,
+            "median_score": 0.0,
+            "score_distribution": {str(i): 0 for i in range(1, 6)},
+            "acceptance_rate": 0.0,
+            "coverage": 0.0,
+        }
+
     average = (
         round(sum(valid_scores) / len(valid_scores), 2)
         if valid_scores

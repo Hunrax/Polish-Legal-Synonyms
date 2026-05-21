@@ -31,7 +31,10 @@ def run_automated_testing(pdf_filename):
 
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
-    csv_file = f"automated_results_{Path(pdf_filename).stem}_{timestamp}.csv"
+    results_dir = Path("automated_tests_results")
+    results_dir.mkdir(parents=True, exist_ok=True)
+
+    csv_file =  results_dir / f"automated_results_{Path(pdf_filename).stem}_{timestamp}.csv"
 
     file_exists = Path(csv_file).exists()
 
@@ -101,8 +104,12 @@ def run_automated_testing(pdf_filename):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python automated_testing_vector_plwordnet.py <pdf_filename>")
-        sys.exit(1)
+    for i in range(1, 11):
+        pdf_filename = f"orzeczenie_{i}.pdf"
+        # pdf_filename = f"ustawa_{i}.pdf"
 
-    run_automated_testing(sys.argv[1])
+        print("\n========================================")
+        print(f"STARTING: {pdf_filename}")
+        print("========================================\n")
+
+        run_automated_testing(pdf_filename)
