@@ -9,3 +9,4 @@ plwordnet_4_2/
 *.xml
 !requirements.txt
 /results/
+*.log

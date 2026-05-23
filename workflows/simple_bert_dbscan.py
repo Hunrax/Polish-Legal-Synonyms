@@ -51,20 +51,36 @@ def run_workflow(pdf_filename, model_name, epsilon):
     for score, count in metrics["score_distribution"].items():
         print(f"  {score}: {count}")
 
+    return metrics
+
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("Usage: python simple_bert_dbscan.py <pdf_filename>")
+    if len(sys.argv) < 2:
+        print("Usage: python simple_bert_dbscan.py <pdf_filename> [model_name] [epsilon]")
         sys.exit(1)
 
     pdf_filename = sys.argv[1]
 
-    print("Available models:")
-    for i, name in enumerate(model_names, start=1):
-        print(f"{i}. {name}")
-    model_choice = int(input("Enter the number of your choice: "))
-    model_name = model_names[model_choice - 1]
-    print(f"Selected model: {model_name}\n")
+    # If model_name is provided as argument, use it
+    if len(sys.argv) >= 3:
+        model_name = sys.argv[2]
+        if model_name not in model_names:
+            print(f"Error: Model '{model_name}' not found.")
+            print("Available models:")
+            for name in model_names:
+                print(f"  - {name}")
+            sys.exit(1)
+    else:
+        print("Available models:")
+        for i, name in enumerate(model_names, start=1):
+            print(f"{i}. {name}")
+        model_choice = int(input("Enter the number of your choice: "))
+        model_name = model_names[model_choice - 1]
+        print(f"Selected model: {model_name}\n")
 
-    epsilon = float(input("Enter DBSCAN epsilon (e.g., 0.4): "))
+    # If epsilon is provided as argument, use it
+    if len(sys.argv) >= 4:
+        epsilon = float(sys.argv[3])
+    else:
+        epsilon = float(input("Enter DBSCAN epsilon (e.g., 0.4): "))
 
     run_workflow(pdf_filename, model_name, epsilon)
