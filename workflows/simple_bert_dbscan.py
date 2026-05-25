@@ -5,13 +5,13 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from text_extraction.extract_from_pdf import load_pdf_text, extract_words_without_lemmas
-from models.bert.bert import get_contextual_embeddings, model_names
+from models.bert.bert import get_contextual_embeddings, load_model_and_tokenizer, model_names
 from clustering.dbscan import cluster_synonyms
 from text_extraction.lemmatization import lemmatize_groups
 from llm_as_a_judge.llm_pairwise_judge import evaluate_synonyms_with_llm
 from metrics.metrics_pairwise import calculate_metrics
 
-def run_workflow(pdf_filename, model_name, epsilon):
+def run_workflow(pdf_filename, model_name, epsilon, model=None, tokenizer=None):
     pdf_path = Path("input") / pdf_filename
 
     if not pdf_path.exists():
@@ -23,7 +23,10 @@ def run_workflow(pdf_filename, model_name, epsilon):
 
     print(f"Extracted {len(all_words)} unique words.")
 
-    word_embeddings = get_contextual_embeddings([raw_text], all_words, model_name)
+    if model is None or tokenizer is None:
+        tokenizer, model = load_model_and_tokenizer(model_name)
+
+    word_embeddings = get_contextual_embeddings([raw_text], all_words, model, tokenizer)
     print(f"Generated embeddings for {len(word_embeddings)} words.\n")
 
     clusters = cluster_synonyms(word_embeddings, eps=epsilon, min_samples=2)

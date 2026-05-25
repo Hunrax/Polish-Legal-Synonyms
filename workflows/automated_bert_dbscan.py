@@ -8,6 +8,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from simple_bert_dbscan import run_workflow
+from models.bert.bert import load_model_and_tokenizer
 from models.bert.bert import model_names
 
 
@@ -28,6 +29,10 @@ def run_batch_experiments(model_name, epsilons, output_csv=None):
         for name in model_names:
             print(f"  - {name}")
         return
+    
+    # Load model
+    print(f"Loading model '{model_name}'...")
+    tokenizer, model = load_model_and_tokenizer(model_name)
     
     # Find all PDF files in input directory
     input_dir = Path("input")
@@ -80,7 +85,7 @@ def run_batch_experiments(model_name, epsilons, output_csv=None):
                 print(f"\n[{current_run}/{total_runs}] Running with epsilon={epsilon}")
                 
                 try:
-                    metrics = run_workflow(pdf_filename, model_name, epsilon)
+                    metrics = run_workflow(pdf_filename, model_name, epsilon, model, tokenizer)
                     
                     if metrics is None:
                         print(f"Failed to run workflow for {pdf_filename} with epsilon={epsilon}")

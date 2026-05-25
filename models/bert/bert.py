@@ -1,7 +1,6 @@
 from transformers import AutoTokenizer, AutoModel
 import torch
 import torch.nn.functional as F
-import numpy as np
 from collections import defaultdict
 
 model_names = [
@@ -10,14 +9,21 @@ model_names = [
     "nlpaueb/legal-bert-base-uncased"
 ]
 
+
+def load_model_and_tokenizer(model_name: str):
+    tokenizer = AutoTokenizer.from_pretrained(model_name)
+    model = AutoModel.from_pretrained(model_name).to("cpu")
+    return tokenizer, model
+
+
 def get_embeddings(words: set[str], model_name: str):
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name).to("cuda")
+    model = AutoModel.from_pretrained(model_name).to("cpu")
 
     word_embeddings = {}
     for word in words:
-        tokens = tokenizer(word, return_tensors='pt', add_special_tokens=False).to("cuda")
+        tokens = tokenizer(word, return_tensors='pt', add_special_tokens=False).to("cpu")
         with torch.no_grad():
             outputs = model(**tokens)
             embeddings = outputs.last_hidden_state.mean(dim=1).squeeze(0)
@@ -27,16 +33,13 @@ def get_embeddings(words: set[str], model_name: str):
     return word_embeddings
 
 
-def get_contextual_embeddings(texts: list[str], target_words: set[str], model_name: str):
-
-    tokenizer = AutoTokenizer.from_pretrained(model_name)
-    model = AutoModel.from_pretrained(model_name).to("cuda")
+def get_contextual_embeddings(texts: list[str], target_words: set[str], model: AutoModel, tokenizer: AutoTokenizer):
 
     collected_vectors = defaultdict(list)
 
     for text in texts:
         inputs = tokenizer(text, return_tensors="pt", return_offsets_mapping=True, 
-                           truncation=True, max_length=512).to("cuda")
+                           truncation=True, max_length=512).to("cpu")
         offsets = inputs.pop("offset_mapping")[0].cpu().numpy()
         
         with torch.no_grad():
