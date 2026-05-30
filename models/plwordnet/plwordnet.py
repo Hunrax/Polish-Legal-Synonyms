@@ -53,3 +53,31 @@ def group_similar_words_plwordnet(words):
 
     return grouped
 
+def expand_via_wordnet(words, input_words):
+    wn = get_wn()
+
+    expanded_groups = []
+
+    for w in words:
+        lus = wn.find(w)
+        if not lus:
+            continue
+
+        local = set()
+
+        for lu in lus:
+            synset = lu.synset
+
+            for other in synset.lexical_units:
+                if other.name in input_words:
+                    local.add(other.name)
+
+            for s, p, o in wn.lexical_relations_where(subject=lu):
+                if "synonim" in str(p) or "przypomina" in str(p):
+                    if o.name in input_words:
+                        local.add(o.name)
+
+        if len(local) > 1:
+            expanded_groups.append(local)
+
+    return expanded_groups
