@@ -5,20 +5,11 @@ import os
 from pyMorfologik import Morfologik
 from pyMorfologik.parsing import ListParser
 
-def clean_and_extract(pdf_path):
+def load_pdf_text(pdf_path):
     if not os.path.exists(pdf_path):
         print(f"Error: File '{pdf_path}' not found.")
         return None
     
-    try:
-        nlp = spacy.load("pl_core_news_lg")
-    except OSError:
-        print("Error while loading 'pl_core_news_lg'. Run: python -m spacy download pl_core_news_lg")
-        return None
-    
-    morf = Morfologik()
-    parser = ListParser()
-
     try:
         doc_pdf = fitz.open(pdf_path)
     except Exception as e:
@@ -38,6 +29,19 @@ def clean_and_extract(pdf_path):
     raw_text = re.sub(r"\d+", "", raw_text)
     raw_text = re.sub(r"[\"§\.\,\:\(\)]", " ", raw_text)
 
+    return raw_text
+
+def clean_and_extract(pdf_path):    
+    try:
+        nlp = spacy.load("pl_core_news_lg")
+    except OSError:
+        print("Error while loading 'pl_core_news_lg'. Run: python -m spacy download pl_core_news_lg")
+        return None
+    
+    morf = Morfologik()
+    parser = ListParser()
+
+    raw_text = load_pdf_text(pdf_path)
     doc = nlp(raw_text)
 
     allowed_pos = {"NOUN", "VERB", "ADJ", "ADV"}
@@ -66,6 +70,35 @@ def clean_and_extract(pdf_path):
                 lemma_map[first_lemma].add(word)
 
     return lemma_map
+
+
+def extract_words_without_lemmas(pdf_path):
+    """Extract filtered words from PDF without lemmatization."""
+    try:
+        nlp = spacy.load("pl_core_news_lg")
+    except OSError:
+        print("Error while loading 'pl_core_news_lg'. Run: python -m spacy download pl_core_news_lg")
+        return None
+
+    raw_text = load_pdf_text(pdf_path)
+    doc = nlp(raw_text)
+
+    allowed_pos = {"NOUN", "VERB", "ADJ", "ADV"}
+
+    extracted_words = set()
+    checked_words = set()
+
+    for token in doc:
+        word = token.text.lower()
+
+        if word in checked_words:
+            continue
+        checked_words.add(word)
+
+        if token.pos_ in allowed_pos and token.is_alpha and len(word) >= 3:
+            extracted_words.add(word)
+
+    return extracted_words
 
 
 if __name__ == "__main__":
