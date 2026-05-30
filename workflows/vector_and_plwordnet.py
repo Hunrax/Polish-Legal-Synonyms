@@ -8,10 +8,11 @@ from text_extraction.extract_from_pdf import clean_and_extract
 from models.word2vec.word2vec import group_similar_words_word2vec
 from models.fasttext.fasttext import group_similar_words_fasttext
 from models.plwordnet.plwordnet import group_similar_words_plwordnet
+from models.plwordnet_fasttext_hybrid.plwordnet_fasttext_hybrid import group_similar_words_hybrid
 from llm_as_a_judge.llm_pairwise_judge import evaluate_synonyms_with_llm
 from metrics.metrics_pairwise import calculate_metrics
 
-model_names = ["word2vec", "fasttext", "plwordnet"]
+model_names = ["word2vec", "fasttext", "plwordnet", "plwordnet_fasttext_hybrid"]
 
 def run_workflow(pdf_filename, model_name, threshold):
     pdf_path = Path("input") / pdf_filename
@@ -38,6 +39,11 @@ def run_workflow(pdf_filename, model_name, threshold):
         for i, group in enumerate(groups, start=1):
             print(f"Group {i}: {', '.join(group)}")
     
+    elif model_name == "plwordnet_fasttext_hybrid":
+        groups = group_similar_words_hybrid(lemmas, threshold=threshold)
+        for i, group in enumerate(groups, start=1):
+            print(f"Group {i}: {', '.join(group)}")
+
     evaluation = evaluate_synonyms_with_llm(groups, label=model_name)
 
     lemmas_in_pairs = len(set(word for group in groups for word in group))
@@ -76,7 +82,7 @@ if __name__ == "__main__":
     print(f"Selected model: {model_name}\n")
 
     threshold = None
-    if(model_name in ["word2vec", "fasttext"]):
+    if(model_name in ["word2vec", "fasttext", "plwordnet_fasttext_hybrid"]):
         threshold = float(input("Enter similarity threshold (e.g., 0.5): "))
 
     run_workflow(pdf_filename, model_name, threshold)

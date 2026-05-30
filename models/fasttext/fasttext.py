@@ -1,6 +1,31 @@
 from pathlib import Path
 from gensim.models.fasttext import load_facebook_vectors
 
+MONTHS = {
+    "styczeń",
+    "luty",
+    "marzec",
+    "kwiecień",
+    "maj",
+    "czerwiec",
+    "lipiec",
+    "sierpień",
+    "wrzesień",
+    "październik",
+    "listopad",
+    "grudzień"
+}
+
+TIME_PERIODS = {
+    "sekunda",
+    "minuta",
+    "godzina",
+    "dzień",
+    "tydzień",
+    "miesiąc",
+    "rok"
+}
+
 path = "cc.pl.300.bin"
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -25,6 +50,8 @@ def group_similar_words_fasttext(words, threshold):
         if len(w) < 3:
             continue
         if w in seen or w not in model:
+            continue
+        if w in MONTHS or w in TIME_PERIODS:
             continue
         
         similar = [

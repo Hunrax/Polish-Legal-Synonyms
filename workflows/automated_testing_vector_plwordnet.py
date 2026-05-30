@@ -11,6 +11,7 @@ from models.fasttext.fasttext import group_similar_words_fasttext
 from models.plwordnet.plwordnet import group_similar_words_plwordnet
 from llm_as_a_judge.llm_pairwise_judge import evaluate_synonyms_with_llm
 from metrics.metrics_pairwise import calculate_metrics
+from models.plwordnet_fasttext_hybrid.plwordnet_fasttext_hybrid import group_similar_words_hybrid
 
 
 def run_automated_testing(pdf_filename):
@@ -20,10 +21,10 @@ def run_automated_testing(pdf_filename):
         print(f"File not found: {pdf_path}")
         return
 
-    models = ["plwordnet", "fasttext", "word2vec"]
+    models = ["plwordnet", "fasttext", "word2vec", "hybrid"]
 
     start = 0.2
-    end = 0.8
+    end = 0.82
     step = 0.02
 
     lemmas = clean_and_extract(pdf_path).keys()
@@ -75,6 +76,9 @@ def run_automated_testing(pdf_filename):
                 elif model_name == "plwordnet":
                     groups = group_similar_words_plwordnet(lemmas)
 
+                elif model_name == "hybrid":
+                    groups = group_similar_words_hybrid(lemmas, threshold=threshold)
+
                 evaluation = evaluate_synonyms_with_llm(groups, label=model_name)
 
                 lemmas_in_pairs = len(set(word for group in groups for word in group))
@@ -105,8 +109,8 @@ def run_automated_testing(pdf_filename):
 
 if __name__ == "__main__":
     for i in range(1, 11):
-        pdf_filename = f"orzeczenie_{i}.pdf"
-        # pdf_filename = f"ustawa_{i}.pdf"
+        # pdf_filename = f"orzeczenie_{i}.pdf"
+        pdf_filename = f"ustawa_{i}.pdf"
 
         print("\n========================================")
         print(f"STARTING: {pdf_filename}")
