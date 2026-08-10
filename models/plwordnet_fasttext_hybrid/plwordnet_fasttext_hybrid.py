@@ -113,24 +113,26 @@ def group_similar_words_hybrid(words, threshold):
         print(f"FastText Group {i}: {', '.join(group)}")
 
     fasttext_groups = normalize_groups_by_pos(fasttext_groups)
+
+    #TODO: Uncomment when PLWordNet is available
+    # for i, group in enumerate(fasttext_groups, start=1):
+    #     print(f"FastText Group Normalized {i}: {', '.join(group)}")
+    # plwordnet_groups = group_similar_words_plwordnet(set(words))
+
+    # for i, group in enumerate(plwordnet_groups, start=1):
+    #     print(f"PLWordNet Group {i}: {', '.join(group)}")
     
-    for i, group in enumerate(fasttext_groups, start=1):
-        print(f"FastText Group Normalized {i}: {', '.join(group)}")
-    plwordnet_groups = group_similar_words_plwordnet(set(words))
+    # plwordnet_groups = normalize_groups_by_pos(plwordnet_groups)
+    # for i, group in enumerate(plwordnet_groups, start=1):
+    #     print(f"PLWordNet Group Normalized {i}: {', '.join(group)}")
 
-    for i, group in enumerate(plwordnet_groups, start=1):
-        print(f"PLWordNet Group {i}: {', '.join(group)}")
-    
-    plwordnet_groups = normalize_groups_by_pos(plwordnet_groups)
-    for i, group in enumerate(plwordnet_groups, start=1):
-        print(f"PLWordNet Group Normalized {i}: {', '.join(group)}")
+    # ft_words = set().union(*fasttext_groups) if fasttext_groups else set()
+    # wn_expanded = expand_via_wordnet(ft_words, words)
+    # for i, group in enumerate(wn_expanded, start=1):
+    #     print(f"WordNet Expanded Group {i}: {', '.join(group)}")
 
-    ft_words = set().union(*fasttext_groups) if fasttext_groups else set()
-    wn_expanded = expand_via_wordnet(ft_words, words)
-    for i, group in enumerate(wn_expanded, start=1):
-        print(f"WordNet Expanded Group {i}: {', '.join(group)}")
-
-    all_groups = plwordnet_groups + fasttext_groups + wn_expanded
+    all_groups = fasttext_groups
+    # all_groups = plwordnet_groups + fasttext_groups + wn_expanded
 
     merged = merge_groups(all_groups)
     for i, group in enumerate(merged, start=1):
