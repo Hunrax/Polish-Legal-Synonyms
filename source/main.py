@@ -1,14 +1,8 @@
 import os
-import sys
 import tempfile
-from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
-
-ROOT_DIR = Path(__file__).resolve().parent.parent
-if str(ROOT_DIR) not in sys.path:
-    sys.path.insert(0, str(ROOT_DIR))
 
 from models.fasttext.fasttext import get_model as load_fasttext_model
 from models.plwordnet_fasttext_hybrid.plwordnet_fasttext_hybrid import group_similar_words_hybrid
