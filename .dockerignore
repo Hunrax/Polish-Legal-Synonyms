@@ -1,0 +1,16 @@
+venv/
+.venv/
+**/env/
+**/.venv/
+source/existing-solutions-analysis/
+source/text_extraction/output/
+source/input/
+plwordnet_4_2/
+**/*.bin
+**/*.pdf
+**/*.csv
+**/*.json
+**/*.xml
+**/*.txt
+**/*.ipynb
+!requirements.txt

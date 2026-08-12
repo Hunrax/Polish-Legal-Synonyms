@@ -1,5 +1,9 @@
 FROM python:3.12.7-bookworm
 
+ENV JAVA_HOME=/opt/java/openjdk
+COPY --from=eclipse-temurin:17 $JAVA_HOME $JAVA_HOME
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
 RUN \
   adduser \
     --system \
@@ -11,15 +15,17 @@ RUN \
       "/app" \
   && chown \
       "service:service" \
-        "/app" \
+        "/app"
 
 COPY "requirements.txt" "/app/requirements.txt"
 
 RUN pip3 install \
       --requirement "/app/requirements.txt" \
-      --no-cache-dir 
+      --no-cache-dir
 
 COPY "source/" "/app/"
+
+RUN /app/models/fasttext/download_model.sh
 
 WORKDIR "/app"
 USER "service:service"
