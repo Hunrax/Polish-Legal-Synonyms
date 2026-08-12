@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools==84.0.*", "wheel==0.48.*"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "polish-legal-synonyms"
+version = "0.1.0"
+description = "API for grouping Polish legal synonyms"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [ { name = "Jan Barczewski", email = "s188679@student.pg.edu.pl" },
+            { name = "Radosław Gajewski", email = "s188687@student.pg.edu.pl"}
+]
+
+dependencies = [
+  "fastapi==0.141.*",
+  "uvicorn==0.52.*",
+  "gensim==4.4.*",
+  "spacy==3.8.*",
+  "pl_core_news_lg @ https://github.com/explosion/spacy-models/releases/download/pl_core_news_lg-3.8.0/pl_core_news_lg-3.8.0-py3-none-any.whl",
+  "PyMuPDF==1.27.*",
+  "pyMorfologik==0.2.*",
+  "plwordnet==0.1.*",
+  "python-multipart==0.0.*"
+]
+
+[tool.setuptools.packages.find]
+include = ["source*"]

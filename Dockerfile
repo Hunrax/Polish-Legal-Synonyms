@@ -9,21 +9,15 @@ RUN \
   && \
     mkdir \
       "/app" \
-      "/run/service" \
-      "/app/models" \
   && chown \
       "service:service" \
         "/app" \
-        "/run/service" \
-        "/app/models" 
 
 COPY "requirements.txt" "/app/requirements.txt"
-RUN \
-  --mount=type=secret,id=build,dst=/etc/build_secrets \
-  export $(xargs < /etc/build_secrets) ; \
-  pip3 install \
-    --requirement "/app/requirements.txt" \
-    --no-cache-dir
+
+RUN pip3 install \
+      --requirement "/app/requirements.txt" \
+      --no-cache-dir 
 
 COPY "source/" "/app/"
 
