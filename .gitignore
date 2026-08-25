@@ -4,9 +4,10 @@ venv/
 plwordnet_4_2/
 *.bin
 *.txt
-*.pdf
+
 *.csv
 *.xml
+!source/models/plwordnet/plwordnet_4_2.xml
 *.json
 !requirements.txt
 /results/
