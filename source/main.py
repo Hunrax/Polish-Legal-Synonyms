@@ -5,6 +5,7 @@ from typing import Any
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 
 from models.fasttext.fasttext import get_model as load_fasttext_model
+from models.plwordnet.plwordnet import get_wn as load_plwordnet_model
 from models.plwordnet_fasttext_hybrid.plwordnet_fasttext_hybrid import group_similar_words_hybrid
 from text_extraction.extract_from_pdf import clean_and_extract
 
@@ -14,6 +15,7 @@ app = FastAPI()
 async def startup_event():
     try:
         load_fasttext_model()
+        load_plwordnet_model()
         print("FastText model loaded successfully on startup.")
     except Exception as exc:
         print(f"Failed to load FastText model on startup: {exc}")

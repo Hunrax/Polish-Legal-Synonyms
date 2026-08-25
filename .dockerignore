@@ -14,3 +14,4 @@ plwordnet_4_2/
 **/*.txt
 **/*.ipynb
 !requirements.txt
+!source/models/plwordnet/plwordnet_4_2.xml
